@@ -26,7 +26,7 @@
 #### 视图
 - All
 
-#### Business Rules
+#### 业务规则
 - None
 
 #### 权限设置
@@ -134,9 +134,10 @@ Single Data Source:
     - Action: 将此采购单状态更改为Cancel
     - Conditional: Status of Order **Is one of** Initial
 
-#### Business Rules
+#### 业务规则
 
-- When **Status of Order is Cancel** then **Read-only all fields**
+- When Status of Order **is** Cancel
+    - Read-only all fields
 
 ## Change Log
 
@@ -158,14 +159,15 @@ Single Data Source:
 - Storage Area List
 - 库存明细 | Inventory Details
 
-#### Workflow
+#### 工作流
 
 ##### When adding new records:
-- 当MSDS不为空，更新物料清单中的MSDS （可能会出问题，若有人上传错误文件，则该条目下物料则使用错误文件）
+- 当MSDS不为空，更新物料清单中的MSDS
+>（可能会出问题，若有人上传错误文件，则该条目下物料则使用错误文件）
 - 若入库方式为合并入库:
-    - 当Material Type **is any of** 甲类，管控，标准品，Micro-key,Consumable-key:
+    - 当Material Type **is any of** 甲类，管控，标准品，Consumable-key:
         - 新建一条库存记录，call PBP - **出入库记录**
-    - 当Material Type **is none of** 甲类，管控，标准品，Micro-key,Consumable-key:
+    - 当Material Type **is none of** 甲类，管控，标准品,Consumable-key:
         - 若不存在该物料:
             - 新建一条库存记录，call PBP - **出入库记录**
         - 若已存在该物料:
@@ -186,7 +188,7 @@ Single Data Source:
 #### 关联表单
 - 库存明细 | Inventory Details
 
-#### Workflow
+#### 工作流
 
 ##### When adding new records:
 - 更新相关库存记录，call PBP - **出入库记录**
@@ -202,10 +204,12 @@ Single Data Source:
 #### 关联表单
 - 库存明细 | Inventory Details
 
-#### Business Rules
-- When **领用方式 | Use Type** is **单次领用 | Single Use**，Show **领用量 | Number**，Required **领用量 | Number**
+#### 业务规则
+- When **领用方式 | Use Type** is **单次领用 | Single Use**
+    - Show **领用量 | Number**
+    - Required **领用量 | Number**
 
-#### Workflow
+#### 工作流
 
 ##### When adding new records:
 - 更新相关库存记录，call PBP - **出入库记录**
@@ -225,7 +229,7 @@ Single Data Source:
 #### 关联表单
 - 库存明细 | Inventory Details
 
-#### Workflow
+#### 工作流
 
 ##### When adding new records:
 - 更新相关库存记录，call PBP - **出入库记录**
@@ -242,7 +246,97 @@ Single Data Source:
 - English Name
 - 别名 | Synonyms: 此处可写任意多个中文或英文名称，仅为方便查找，不会改变标准命名
 
+#### 关联表单
+- 物料清单 | Material List
+
 ### 2. 物料清单 | Material List
 
 #### 字段
+- Material_ID
+- 领用方式 | Use Type:
+    - 单次领用 | Single Use
+    - 用后归还 | Return After Use
+    - 无需领用 | No Required
+- Material Type（多选）: 
+    > 此处分类决定后续采购及领用流程。
+    - 甲类危险品 | Class A
+    - 管控物质 | Controlled
+    - 标准品 | Reference Material
+    - Consumable - key
+    - Consumable - Regular
+    - Others
+- MSDS
+- 包装 | Package
+- 规格 / 浓度 / 当量 /etc.
+- 品牌 (生产商) | Brand (Required)
+- 货号 | Product Number
+- 预估单价
+- 采购单位 | Unit (Required)
+- 领用单位 | Unit (Required)
+- 库存换算系数
+> 库存数量 = 库存换算系数 * 采购数量。如一瓶溶液包装为“500ml（/瓶）”，领用单位为“ml”，因采购单位为“瓶”，，则库存换算系数应设为“500”。此设计旨在确保领用时准确扣除库存。
+
+#### 关联表单
+- Material Index
+- 默认存放位置 | Storage Area
+- 库存明细 | Inventory Details
+- 供应商清单 | Supplier List
+
+#### 业务规则
+- When Material Index is **00_无需目录收录的物品 | Do not need Index** 
+    - Show Material name
+
+### 3. 库存明细 | Inventory Details
+
+#### 字段
+##### Tab-Basic
+- Material Status (auto):
+    - 可用的 | Available
+    - 待归还 | Pending Return
+    - 已停用 | Disabled
+- 领用方式 | Use Type：默认来自上一级
+- Batch Number | 批号
+- Project Related
+- 入库日期 | Receive Date
+- 有效期至 | Expired Date
+- 纯度等级 | Purity Grade
+- 纯度 | Purity: 
+    - range: 0-1
+- COA
+- MSDS: 来自上一级
+- 当前库存数量
+- 领用单位 | Unit
+- 备注 | Remarks
+- 货号 | Product Number
+- 预估单价
+##### Tab - Rating & Evaluation
+- Product ( or Service) Quality | 产品(或服务) 质量
+- On-time Delivery | 物流速度
+- 评估结果 | ResultL:
+    - Pass
+    - Pending Evaluation
+    - Reject
+- 技术评估 | Evaluation
+- 评价/追评 | Comments
+- File
+
+#### 关联表单
 - 物料清单 | Material List
+- 库区库位 | Storage Area
+- 供应商 | Supplier
+- 库存变动明细 | Stock Change Record
+
+#### 业务规则
+- When Material Status **Is one of** 已停用 | Disabled
+    - Read-only all fields
+
+### 按钮
+- 领用
+- 盘点
+- 危化品领用
+- 再次购买
+- 评价/验收
+- 停用
+- 归还
+
+
