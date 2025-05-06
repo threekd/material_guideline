@@ -1,13 +1,5 @@
 # New Purchase & Inventory
 
-Config:
-- 字段
-- 关联表单
-- workflow
-- 视图
-- business rules
-- 权限设置
-
 ## 采购模块各表单及结构：
 
 ## Purchase:
@@ -186,14 +178,71 @@ Single Data Source:
 ### 2. 盘点单
 
 #### 字段
-
 - Operator
 - Operate Date
 - 实际库存 | Number
-- 库存单位 | Unit
+- 领用单位 | Unit
 
 #### 关联表单
 - 库存明细 | Inventory Details
 
+#### Workflow
 
+##### When adding new records:
+- 更新相关库存记录，call PBP - **出入库记录**
 
+### 3. 领用单（General）
+
+#### 字段
+- 领用量 | Number
+- 领用单位 | Unit
+- 领用人 | User
+- 领用日期 | Usage Date
+
+#### 关联表单
+- 库存明细 | Inventory Details
+
+#### Business Rules
+- When **领用方式 | Use Type** is **单次领用 | Single Use**，Show **领用量 | Number**，Required **领用量 | Number**
+
+#### Workflow
+
+##### When adding new records:
+- 更新相关库存记录，call PBP - **出入库记录**
+- 当领用方式为单次领用时:
+    - 扣减库存为领用量，标记operation为**单次领用**
+- 当领用方式为用后归还时，
+    - 扣减库存为0，标记operation为**领用待归还**
+
+### 4. 归还单
+
+#### 字段
+- 领用量 | Number
+- 库存单位 | Unit
+- 归还员 | Returner
+- 归还日期 | Return Date
+
+#### 关联表单
+- 库存明细 | Inventory Details
+
+#### Workflow
+
+##### When adding new records:
+- 更新相关库存记录，call PBP - **出入库记录**
+
+## Inventory
+
+### 1. Index
+
+#### 字段
+- Has CAS Number？
+    - Yes
+    - No
+- Chinese Name
+- English Name
+- 别名 | Synonyms: 此处可写任意多个中文或英文名称，仅为方便查找，不会改变标准命名
+
+### 2. 物料清单 | Material List
+
+#### 字段
+- 物料清单 | Material List
