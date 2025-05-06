@@ -4,19 +4,18 @@ import { viteBundler } from '@vuepress/bundler-vite';
 
 export default defineUserConfig({
   lang: 'en-US',
-  title: 'VuePress',
-  description: 'My first VuePress Site',
+  title: 'New Purchase & Inventory',
+  description: 'material_guideline',
   base: '/material_guideline/', // 根据您的仓库名称设置
 
   theme: defaultTheme({
     logo: 'https://vuejs.press/images/hero.png',
     navbar: [
-      { text: 'material_guideline', link: '/material_guideline' },
+      { text: '', link: '/' },
     ],
     sidebar: {
       '/': [
         '',
-        'material_guideline',
       ],
     },
   }),

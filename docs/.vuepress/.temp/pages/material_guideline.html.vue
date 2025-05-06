@@ -1,13 +1,4 @@
 <template><div><h1 id="new-purchase-inventory" tabindex="-1"><a class="header-anchor" href="#new-purchase-inventory"><span>New Purchase &amp; Inventory</span></a></h1>
-<p>Config:</p>
-<ul>
-<li>字段</li>
-<li>关联表单</li>
-<li>workflow</li>
-<li>视图</li>
-<li>business rules</li>
-<li>权限设置</li>
-</ul>
 <h2 id="采购模块各表单及结构" tabindex="-1"><a class="header-anchor" href="#采购模块各表单及结构"><span>采购模块各表单及结构：</span></a></h2>
 <h2 id="purchase" tabindex="-1"><a class="header-anchor" href="#purchase"><span>Purchase:</span></a></h2>
 <h3 id="_1-采购申请-purchase-request" tabindex="-1"><a class="header-anchor" href="#_1-采购申请-purchase-request"><span>1. 采购申请 | Purchase Request</span></a></h3>
@@ -298,11 +289,83 @@
 <li>Operator</li>
 <li>Operate Date</li>
 <li>实际库存 | Number</li>
-<li>库存单位 | Unit</li>
+<li>领用单位 | Unit</li>
 </ul>
 <h4 id="关联表单-4" tabindex="-1"><a class="header-anchor" href="#关联表单-4"><span>关联表单</span></a></h4>
 <ul>
 <li>库存明细 | Inventory Details</li>
+</ul>
+<h4 id="workflow-1" tabindex="-1"><a class="header-anchor" href="#workflow-1"><span>Workflow</span></a></h4>
+<h5 id="when-adding-new-records-1" tabindex="-1"><a class="header-anchor" href="#when-adding-new-records-1"><span>When adding new records:</span></a></h5>
+<ul>
+<li>更新相关库存记录，call PBP - <strong>出入库记录</strong></li>
+</ul>
+<h3 id="_3-领用单-general" tabindex="-1"><a class="header-anchor" href="#_3-领用单-general"><span>3. 领用单（General）</span></a></h3>
+<h4 id="字段-5" tabindex="-1"><a class="header-anchor" href="#字段-5"><span>字段</span></a></h4>
+<ul>
+<li>领用量 | Number</li>
+<li>领用单位 | Unit</li>
+<li>领用人 | User</li>
+<li>领用日期 | Usage Date</li>
+</ul>
+<h4 id="关联表单-5" tabindex="-1"><a class="header-anchor" href="#关联表单-5"><span>关联表单</span></a></h4>
+<ul>
+<li>库存明细 | Inventory Details</li>
+</ul>
+<h4 id="business-rules-2" tabindex="-1"><a class="header-anchor" href="#business-rules-2"><span>Business Rules</span></a></h4>
+<ul>
+<li>When <strong>领用方式 | Use Type</strong> is <strong>单次领用 | Single Use</strong>，Show <strong>领用量 | Number</strong>，Required <strong>领用量 | Number</strong></li>
+</ul>
+<h4 id="workflow-2" tabindex="-1"><a class="header-anchor" href="#workflow-2"><span>Workflow</span></a></h4>
+<h5 id="when-adding-new-records-2" tabindex="-1"><a class="header-anchor" href="#when-adding-new-records-2"><span>When adding new records:</span></a></h5>
+<ul>
+<li>更新相关库存记录，call PBP - <strong>出入库记录</strong></li>
+<li>当领用方式为单次领用时:
+<ul>
+<li>扣减库存为领用量，标记operation为<strong>单次领用</strong></li>
+</ul>
+</li>
+<li>当领用方式为用后归还时，
+<ul>
+<li>扣减库存为0，标记operation为<strong>领用待归还</strong></li>
+</ul>
+</li>
+</ul>
+<h3 id="_4-归还单" tabindex="-1"><a class="header-anchor" href="#_4-归还单"><span>4. 归还单</span></a></h3>
+<h4 id="字段-6" tabindex="-1"><a class="header-anchor" href="#字段-6"><span>字段</span></a></h4>
+<ul>
+<li>领用量 | Number</li>
+<li>库存单位 | Unit</li>
+<li>归还员 | Returner</li>
+<li>归还日期 | Return Date</li>
+</ul>
+<h4 id="关联表单-6" tabindex="-1"><a class="header-anchor" href="#关联表单-6"><span>关联表单</span></a></h4>
+<ul>
+<li>库存明细 | Inventory Details</li>
+</ul>
+<h4 id="workflow-3" tabindex="-1"><a class="header-anchor" href="#workflow-3"><span>Workflow</span></a></h4>
+<h5 id="when-adding-new-records-3" tabindex="-1"><a class="header-anchor" href="#when-adding-new-records-3"><span>When adding new records:</span></a></h5>
+<ul>
+<li>更新相关库存记录，call PBP - <strong>出入库记录</strong></li>
+</ul>
+<h2 id="inventory" tabindex="-1"><a class="header-anchor" href="#inventory"><span>Inventory</span></a></h2>
+<h3 id="_1-index" tabindex="-1"><a class="header-anchor" href="#_1-index"><span>1. Index</span></a></h3>
+<h4 id="字段-7" tabindex="-1"><a class="header-anchor" href="#字段-7"><span>字段</span></a></h4>
+<ul>
+<li>Has CAS Number？
+<ul>
+<li>Yes</li>
+<li>No</li>
+</ul>
+</li>
+<li>Chinese Name</li>
+<li>English Name</li>
+<li>别名 | Synonyms: 此处可写任意多个中文或英文名称，仅为方便查找，不会改变标准命名</li>
+</ul>
+<h3 id="_2-物料清单-material-list" tabindex="-1"><a class="header-anchor" href="#_2-物料清单-material-list"><span>2. 物料清单 | Material List</span></a></h3>
+<h4 id="字段-8" tabindex="-1"><a class="header-anchor" href="#字段-8"><span>字段</span></a></h4>
+<ul>
+<li>物料清单 | Material List</li>
 </ul>
 </div></template>
 
