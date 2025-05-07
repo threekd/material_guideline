@@ -1,7 +1,8 @@
 # New Purchase & Inventory
 
-## 采购模块各表单及结构：
+## Purchase & Inventory
 
+## Locaton
 ## Purchase:
 ### 1. 采购申请 | Purchase Request
 
@@ -127,7 +128,10 @@ Batch Data Source:
 #### 按钮
 Single Data Source:
 - Create PO确认采购:
-    - Action: 弹出窗口，采购人员填写 PO Number， 实际总花费 | Total
+    - Action: 
+        - 弹出窗口，采购人员填写 PO Number， 实际总花费 | Total
+        - 更新采购单及其采购明细的状态为Purchasing
+        - 以此次采购信息更新所关联的物料清单中的 **Purchase Info.**
     - Conditional: Status of Order **Is one of** Initial
 
 - 取消采购:
@@ -335,8 +339,57 @@ Single Data Source:
 - 盘点
 - 危化品领用
 - 再次购买
-- 评价/验收
+    - 以当前库存为模板，生成一条采购申请及其关联的采购明细。
+- 评价/验收:
+    - 弹出Tab - Rating & Evaluation，添加评价和评估信息后，Workflow将同步同一入库单下的同批号库存评价内容。
 - 停用
 - 归还
 
+## Self-Made
+
+### 1. Self-made - PhyChem
+
+### 2.Self-Made - Micro
+
+#### 字段
+- Status of Self-Made:
+    - 可用的
+    - 已停用
+- Name | 名称
+- Batch Number | 批号
+- 数量 | Quantity
+- Package | 包装
+- Preparation Date
+- Expiration Date
+- 灭菌后pH
+- 灭菌条件
+- 无菌培养:
+    - 合格
+    - 不合格
+- HazardClass
+    - General
+    - Corrosive
+    - Flammable
+    - Toxic
+- Prepared by (auto): 新建时当前用户
+- Signature
+- Remark
+
+#### 关联表单
+- Storage Area List
+- Preparation - Micro
+- Equipment
+
+#### 按钮
+- Disable: 将状态更新为已停用，只读所有字段。
+- Print
+- Reproduce:
+    - Action:
+        - 复制当前Record及其子表，去除必要字段信息。
+    - Purpose:
+        - 为重复Self-Made提供便利。
+
+#### 业务规则
+- When Status of Self-Made is 已停用:
+    - Read-only all fields
 
