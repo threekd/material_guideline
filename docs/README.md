@@ -1,10 +1,118 @@
-# New Purchase & Inventory
+# Design Document
 
-## Purchase & Inventory
+## Inventory
 
-## Locaton
+### Index
+
+#### 字段
+- Has CAS Number？
+    - Yes
+    - No
+- Chinese Name
+- English Name
+- 别名 | Synonyms: 此处可写任意多个中文或英文名称，仅为方便查找，不会改变标准命名
+
+#### 关联表单
+- 物料清单 | Material List
+
+#### 按钮
+- Add Synonyms:
+    - Action: 弹出窗口，可修改当前物料 **别名 | Synonyms**
+
+### 物料清单 | Material List
+
+#### 字段
+- Material_ID
+- 领用方式 | Use Type:
+    - 单次领用 | Single Use
+    - 用后归还 | Return After Use
+    - 无需领用 | No Required
+- Material Type（多选）: 
+    > 此处分类决定后续采购及领用流程。
+    - 甲类危险品 | Class A
+    - 管控物质 | Controlled
+    - 标准品 | Reference Material
+    - Consumable - key
+    - Consumable - Regular
+    - Others
+- MSDS
+- 包装 | Package
+- 规格 / 浓度 / 当量 /etc.
+- 品牌 (生产商) | Brand (Required)
+- 货号 | Product Number
+- 预估单价
+- 采购单位 | Unit (Required)
+- 领用单位 | Unit (Required)
+- 库存换算系数
+> 库存数量 = 库存换算系数 * 采购数量。如一瓶溶液包装为“500ml（/瓶）”，领用单位为“ml”，因采购单位为“瓶”，，则库存换算系数应设为“500”。此设计旨在确保领用时准确扣除库存。
+
+#### 关联表单
+- Material Index
+- 默认存放位置 | Storage Area
+- 库存明细 | Inventory Details
+- 供应商清单 | Supplier List
+
+#### 业务规则
+- When Material Index is **00_无需目录收录的物品 | Do not need Index** 
+    - Show Material name
+
+### 库存明细 | Inventory Details
+
+#### 字段
+##### Tab-Basic
+- Material Status (auto):
+    - 可用的 | Available
+    - 待归还 | Pending Return
+    - 已停用 | Disabled
+- 领用方式 | Use Type：默认来自上一级
+- Batch Number | 批号
+- Project Related
+- 入库日期 | Receive Date
+- 有效期至 | Expired Date
+- 纯度等级 | Purity Grade
+- 纯度 | Purity: 
+    - range: 0-1
+- COA
+- MSDS: 来自上一级
+- 当前库存数量
+- 领用单位 | Unit
+- 备注 | Remarks
+- 货号 | Product Number
+- 预估单价
+##### Tab - Rating & Evaluation
+- Product ( or Service) Quality | 产品(或服务) 质量
+- On-time Delivery | 物流速度
+- 评估结果 | ResultL:
+    - Pass
+    - Pending Evaluation
+    - Reject
+- 技术评估 | Evaluation
+- 评价/追评 | Comments
+- File
+
+#### 关联表单
+- 物料清单 | Material List
+- 库区库位 | Storage Area
+- 供应商 | Supplier
+- 库存变动明细 | Stock Change Record
+
+#### 业务规则
+- When Material Status **Is one of** 已停用 | Disabled
+    - Read-only all fields
+
+### 按钮
+- 领用
+- 盘点
+- 危化品领用
+- 再次购买
+    - 以当前库存为模板，生成一条采购申请及其关联的采购明细。
+- 评价/验收:
+    - 弹出Tab - Rating & Evaluation，添加评价和评估信息后，Workflow将同步同一入库单下的同批号库存评价内容。
+- 停用
+- 归还
+
 ## Purchase:
-### 1. 采购申请 | Purchase Request
+### 采购申请 | Purchase Request
 
 #### 字段
 
@@ -35,7 +143,7 @@
     - View (All)
     - Edit (Owner)
 
-### 2. 采购明细 | Purchase Item
+### 采购明细 | Purchase Item
 
 #### 字段
 
@@ -105,7 +213,7 @@ Batch Data Source:
     - Action: 合并采购项目生成一条 **采购单 | Purchase Order**
     - Conditional: Status of Goods **is** Initial
 
-### 3. 采购单 | Purchase Order
+### 采购单 | Purchase Order
 
 #### 字段
 - PurchaseOrder_ID
@@ -145,7 +253,21 @@ Single Data Source:
 
 ## Change Log
 
-### 1. 入库单
+### 库存变动明细 | Stock Change Record
+
+#### 字段
+- Operator
+- Operate Date
+- Operation
+- 变动前库存 | Number - Before
+- 变动后库存 | Number - After
+- 变动数量 | Number - Changed
+- 库存单位 | Unit
+
+#### 关联表单
+- 库存明细 | Inventory Details
+
+### 入库单
 
 #### 字段
 - 入库方式 | Stocking Method
@@ -181,7 +303,7 @@ Single Data Source:
 
 - 更新 Status of Goods 为 **Stocked**
 
-### 2. 盘点单
+### 盘点单
 
 #### 字段
 - Operator
@@ -197,7 +319,7 @@ Single Data Source:
 ##### When adding new records:
 - 更新相关库存记录，call PBP - **出入库记录**
 
-### 3. 领用单（General）
+### 领用单（General）
 
 #### 字段
 - 领用量 | Number
@@ -222,7 +344,7 @@ Single Data Source:
 - 当领用方式为用后归还时，
     - 扣减库存为0，标记operation为**领用待归还**
 
-### 4. 归还单
+### 归还单
 
 #### 字段
 - 领用量 | Number
@@ -238,118 +360,12 @@ Single Data Source:
 ##### When adding new records:
 - 更新相关库存记录，call PBP - **出入库记录**
 
-## Inventory
-
-### 1. Index
-
-#### 字段
-- Has CAS Number？
-    - Yes
-    - No
-- Chinese Name
-- English Name
-- 别名 | Synonyms: 此处可写任意多个中文或英文名称，仅为方便查找，不会改变标准命名
-
-#### 关联表单
-- 物料清单 | Material List
-
-### 2. 物料清单 | Material List
-
-#### 字段
-- Material_ID
-- 领用方式 | Use Type:
-    - 单次领用 | Single Use
-    - 用后归还 | Return After Use
-    - 无需领用 | No Required
-- Material Type（多选）: 
-    > 此处分类决定后续采购及领用流程。
-    - 甲类危险品 | Class A
-    - 管控物质 | Controlled
-    - 标准品 | Reference Material
-    - Consumable - key
-    - Consumable - Regular
-    - Others
-- MSDS
-- 包装 | Package
-- 规格 / 浓度 / 当量 /etc.
-- 品牌 (生产商) | Brand (Required)
-- 货号 | Product Number
-- 预估单价
-- 采购单位 | Unit (Required)
-- 领用单位 | Unit (Required)
-- 库存换算系数
-> 库存数量 = 库存换算系数 * 采购数量。如一瓶溶液包装为“500ml（/瓶）”，领用单位为“ml”，因采购单位为“瓶”，，则库存换算系数应设为“500”。此设计旨在确保领用时准确扣除库存。
-
-#### 关联表单
-- Material Index
-- 默认存放位置 | Storage Area
-- 库存明细 | Inventory Details
-- 供应商清单 | Supplier List
-
-#### 业务规则
-- When Material Index is **00_无需目录收录的物品 | Do not need Index** 
-    - Show Material name
-
-### 3. 库存明细 | Inventory Details
-
-#### 字段
-##### Tab-Basic
-- Material Status (auto):
-    - 可用的 | Available
-    - 待归还 | Pending Return
-    - 已停用 | Disabled
-- 领用方式 | Use Type：默认来自上一级
-- Batch Number | 批号
-- Project Related
-- 入库日期 | Receive Date
-- 有效期至 | Expired Date
-- 纯度等级 | Purity Grade
-- 纯度 | Purity: 
-    - range: 0-1
-- COA
-- MSDS: 来自上一级
-- 当前库存数量
-- 领用单位 | Unit
-- 备注 | Remarks
-- 货号 | Product Number
-- 预估单价
-##### Tab - Rating & Evaluation
-- Product ( or Service) Quality | 产品(或服务) 质量
-- On-time Delivery | 物流速度
-- 评估结果 | ResultL:
-    - Pass
-    - Pending Evaluation
-    - Reject
-- 技术评估 | Evaluation
-- 评价/追评 | Comments
-- File
-
-#### 关联表单
-- 物料清单 | Material List
-- 库区库位 | Storage Area
-- 供应商 | Supplier
-- 库存变动明细 | Stock Change Record
-
-#### 业务规则
-- When Material Status **Is one of** 已停用 | Disabled
-    - Read-only all fields
-
-### 按钮
-- 领用
-- 盘点
-- 危化品领用
-- 再次购买
-    - 以当前库存为模板，生成一条采购申请及其关联的采购明细。
-- 评价/验收:
-    - 弹出Tab - Rating & Evaluation，添加评价和评估信息后，Workflow将同步同一入库单下的同批号库存评价内容。
-- 停用
-- 归还
 
 ## Self-Made
 
-### 1. Self-made - PhyChem
+### Self-made - PhyChem
 
-### 2.Self-Made - Micro
+### Self-Made - Micro
 
 #### 字段
 - Status of Self-Made:
