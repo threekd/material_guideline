@@ -5,6 +5,8 @@
 ### Index
 
 #### 字段
+- Title (auto):
+    - [Chinese Name] | [English Name]
 - Has CAS Number？
     - Yes
     - No
@@ -22,6 +24,9 @@
 ### 物料清单 | Material List
 
 #### 字段
+##### Basic
+- Title (auto):
+    - [规格 / 浓度 / 当量 /etc.] [Material Name], [包装 | Package] - [品牌 (生产商) | Brand]
 - Material_ID
 - 领用方式 | Use Type:
     - 单次领用 | Single Use
@@ -45,7 +50,11 @@
 - 领用单位 | Unit (Required)
 - 库存换算系数
 > 库存数量 = 库存换算系数 * 采购数量。如一瓶溶液包装为“500ml（/瓶）”，领用单位为“ml”，因采购单位为“瓶”，，则库存换算系数应设为“500”。此设计旨在确保领用时准确扣除库存。
-
+##### Inventory Info.
+- 安全库存
+- 当前库存总量 (auto)
+    - Rollup **当前库存总量**
+    - Sum
 #### 关联表单
 - Material Index
 - 默认存放位置 | Storage Area
@@ -65,7 +74,7 @@
     - 待归还 | Pending Return
     - 已过期 | Expired
     - 已停用 | Disabled
-- 领用方式 | Use Type：默认来自上一级
+- 领用方式 | Use Type：默认来自上一级 **物料清单 | Material List**
 - Batch Number | 批号
 - Project Related
 - 入库日期 | Receive Date
@@ -74,8 +83,10 @@
 - 纯度 | Purity: 
     - range: 0-1
 - COA
-- MSDS: 来自上一级
+- MSDS: 来自上一级 **物料清单 | Material List**
 - 当前库存数量
+    - Rollup **变动数量 | Number - Changed**
+    - Sum
 - 领用单位 | Unit
 - 备注 | Remarks
 - 货号 | Product Number
@@ -152,7 +163,8 @@
 - All
 
 #### 业务规则
-- None
+- When Status of Request **not equal to** Submitted
+    - Read-only all fields
 
 #### 权限设置
 - APTC Members:
@@ -313,7 +325,7 @@ Single Data Source:
         - 若不存在该物料:
             - 新建一条库存记录，call PBP - **出入库记录**
         - 若已存在该物料:
-            - 更新该物料批号，入库日期
+            - 更新该物料批号，入库日期，call PBP - **出入库记录**
 - 若入库方式为拆分入库:
     - 根据入库数量，创建n个相同的库存记录。call PBP - **出入库记录**
 
@@ -361,6 +373,33 @@ Single Data Source:
     - 扣减库存为领用量，标记operation为**单次领用**
 - 当领用方式为用后归还时，
     - 扣减库存为0，标记operation为**领用待归还**
+### 领用单 (Controlled)
+
+#### 字段
+- Title (auto)
+    - **库存明细 | Inventory Details**, **申请人**
+- 申请日期
+- 使用目的
+- 用前称重
+- 用后称重
+- 实际使用量 (auto):
+    - 用后称重 - 用前称重
+- 申请人
+- 审批人
+- 申请人签字
+- 审批人签字
+
+#### 关联表单
+- 库存明细 | Inventory Details
+
+#### 工作流
+
+##### When adding new records:
+- Action:
+    - 若Index包含 **Caffeine**
+        - 通知咖啡因审批人审批，审批需签名。
+    - 其他情况
+        - 通知危化品审批人审批，审批需签名。
 
 ### 归还单
 
@@ -389,6 +428,7 @@ Single Data Source:
 #### 字段
 - Status of Self-Made:
     - 可用的
+    - 已过期
     - 已停用
 - Name | 名称
 - Batch Number | 批号
@@ -422,9 +462,9 @@ Single Data Source:
     - Action:
         - 复制当前Record及其子表，去除必要字段信息。
     - Purpose:
-        - 为重复Self-Made提供便利。
+        - 为重复配置Self-Made提供便利。
 
 #### 业务规则
-- When Status of Self-Made is 已停用:
+- When Status of Self-Made **Is one of** 已停用，已过期:
     - Read-only all fields
 
