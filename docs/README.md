@@ -302,6 +302,7 @@ Single Data Source:
 - Operate Date
 - 入库数量 | Number
     - Limit numerical range: [0,Max]
+    - 采购单位 | Unit
 - Batch Number | 批号
 - 有效期至 | Expired Date
 - COA
