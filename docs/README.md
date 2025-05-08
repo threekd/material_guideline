@@ -120,8 +120,9 @@
 #### 字段
 
 - Status of Request (auto)：
-    - Submitted: 提交后初始状态
-    - Compeleted: 所有Purchase item已签收 （Status of Goods 为 **Received**）。
+    - Submitted: 已下单条目=0
+    - Purchasing 已下单条目>0,已完成条目<条目总数
+    - Compeleted: 非以上条件
 
 - 采购用途 | Justification（required）
 - PurchaseRequest_ID (auto)
@@ -129,11 +130,23 @@
 - Purchase Request Date (auto): 当前时间
 - 备注 | Remark: 用户可以通过此字段备注需要采购人员了解的事项。
 - 预估请购总价 | Estimated Total (auto)
-- 到货数 (auto)
-- 请购项目数 (auto)
+- 已下单条目 (auto):
+    - Rollup: Number of Records
+    - Filter: Status of Goods **not any of** Initial,Cancel
+- 已完成条目 (auto):
+    - Rollup: Number of Records
+    - Filter: Status of Goods **Is one of** Received,Cancel
+- 请购项目数 (auto):
+    - 所关联条目总数
 
 #### 关联表单
 - Purchase Item
+
+#### 按钮
+- Cancel
+    - Action:
+        - 将该申请单下的采购条目状态更新为 **Cancel**
+    - Conditional: 已下单条目=0
 
 #### 视图
 - All
@@ -156,7 +169,7 @@
     - Purchasing: 采购人员提交采购单 **Create PO确认购买** 后
     - Reveived: 采购人员收到货 **签收** 后
     - Stocked: 货物执行 **入库** 后
-    - Rejected: 驳回
+    - Cancel
 
 - Project Related:
     - RMP/PTP: 勾选后所购买项目会被标记为RMP/PTP专用，也会方便后续统计此项目花费
@@ -208,7 +221,6 @@ Single Data Source:
         - 若 Status of Package 为 **Good**, 更新 Status of Goods 为 **Received**
             - 若入库数 = 采购，则更新采购单状态为 **GR**
             - 若入库数 < 采购，则更新采购单状态为 **Partial GR**
-            - 若到货数 = 请购项目数，则更新请购单状态为 **Compeleted**
     - Conditional: Status of Goods **Is one of** Purchasing
 
 Batch Data Source:
