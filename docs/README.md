@@ -224,7 +224,7 @@
 #### 按钮
 Single Data Source:
 - 入库: 
-    - Action: 弹出**入库单**，触发 **新建入库单** workflow。(参见Changelog-入库单-workflow)
+    - Action: 弹出**入库单**，触发 **新建入库单** workflow。(参见Changelog-入库单-工作流)
     - Conditional: Status of Goods **Is one of** Received
 
 - 签收:
@@ -325,7 +325,7 @@ Single Data Source:
         - 若不存在该物料:
             - 新建一条库存记录，call PBP - **出入库记录**
         - 若已存在该物料:
-            - 更新该物料批号，入库日期，call PBP - **出入库记录**
+            - 更新该物料批号，入库日期，库区库位，call PBP - **出入库记录**
 - 若入库方式为拆分入库:
     - 根据入库数量，创建n个相同的库存记录。call PBP - **出入库记录**
 
