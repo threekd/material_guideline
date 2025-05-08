@@ -63,6 +63,7 @@
 - Material Status (auto):
     - 可用的 | Available
     - 待归还 | Pending Return
+    - 已过期 | Expired
     - 已停用 | Disabled
 - 领用方式 | Use Type：默认来自上一级
 - Batch Number | 批号
@@ -79,7 +80,7 @@
 - 备注 | Remarks
 - 货号 | Product Number
 - 预估单价
-##### Tab - Rating & Evaluation
+##### Tab - FM-03I 耗品验收/服务评估记录
 - Product ( or Service) Quality | 产品(或服务) 质量
 - On-time Delivery | 物流速度
 - 评估结果 | ResultL:
@@ -97,7 +98,7 @@
 - 库存变动明细 | Stock Change Record
 
 #### 业务规则
-- When Material Status **Is one of** 已停用 | Disabled
+- When Material Status **Is one of** 已停用 | Disabled，已过期 | Expired
     - Read-only all fields
 
 ### 按钮
@@ -105,7 +106,9 @@
 - 盘点
 - 危化品领用
 - 再次购买
-    - 以当前库存为模板，生成一条采购申请及其关联的采购明细。
+    - Action:
+        - 弹出窗口，填写采购数量，Workflow会通过正则表达式确认输出为数字型。
+        - 以当前库存为模板，生成一条采购申请及其关联的采购明细。
 - 评价/验收:
     - 弹出Tab - Rating & Evaluation，添加评价和评估信息后，Workflow将同步同一入库单下的同批号库存评价内容。
 - 停用
@@ -231,7 +234,7 @@ Batch Data Source:
 - 采购明细数
 
 #### 关联表单
--Purchase Item
+- Purchase Item
 
 #### 按钮
 Single Data Source:
@@ -274,6 +277,7 @@ Single Data Source:
 - Operator
 - Operate Date
 - 入库数量 | Number
+    - Limit numerical range: [0,Max]
 - Batch Number | 批号
 - 有效期至 | Expired Date
 - COA
@@ -309,6 +313,7 @@ Single Data Source:
 - Operator
 - Operate Date
 - 实际库存 | Number
+    - Limit numerical range: [0,Max]
 - 领用单位 | Unit
 
 #### 关联表单
@@ -323,6 +328,7 @@ Single Data Source:
 
 #### 字段
 - 领用量 | Number
+    - Limit numerical range: [0,Max]
 - 领用单位 | Unit
 - 领用人 | User
 - 领用日期 | Usage Date
@@ -348,6 +354,7 @@ Single Data Source:
 
 #### 字段
 - 领用量 | Number
+    - Limit numerical range: [0,Max]
 - 库存单位 | Unit
 - 归还员 | Returner
 - 归还日期 | Return Date
