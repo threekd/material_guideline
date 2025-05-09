@@ -1,32 +1,35 @@
-# Design Document
-> Document Structure:
+# Low Level Design Document
+> 文档结构:
 >- 分组
 >   - 表单
 >       - 字段
->       - 关联表单
+>           - Tab
 >       - 按钮
 >       - 业务规则
 >       - 工作流
+>           - When adding new records
 >       - 视图
 >       - 权限设置
 
 ## Inventory
 
-### Index
+### 目录 | Index
 > 此表单的作用在于规范命名，便于库存查询和统计分析。
 
 #### 字段
+##### Tab - Basic
 - Title (auto):
     - [Chinese Name] | [English Name]
 - Has CAS Number？
     - Yes
     - No
+- CAS Number (Relationship): **CAS Number List**
 - Chinese Name
 - English Name
 - 别名 | Synonyms: 此处可写任意多个中文或英文名称，仅为方便查找，不会改变标准命名
 
-#### 关联表单
-- 物料清单 | Material List
+##### Tab - Material List
+- 物料清单 | Material List (Relationship): **物料清单 | Material List**
 
 #### 按钮
 - Add Synonyms:
@@ -52,10 +55,12 @@
 - Title (auto):
     - [规格 / 浓度 / 当量 /etc.] [Material Name], [包装 | Package] - [品牌 (生产商) | Brand]
 - Material_ID
+- Material Index (Relationship)
 - 领用方式 | Use Type:
     - 单次领用 | Single Use
     - 用后归还 | Return After Use
     - 无需领用 | No Required
+- - 默认存放位置 | Storage Area (Relationship): **Storage Area List**
 - Material Type（多选）: 
     > 此处分类决定后续采购及领用流程。
     - 甲类危险品 | Class A
@@ -87,11 +92,9 @@
     - Rollup **当前库存总量**
     - Sum
 
-#### 关联表单
-- Material Index
-- 默认存放位置 | Storage Area
-- 库存明细 | Inventory Details
-- 供应商清单 | Supplier List
+- 库存明细 | Inventory Details (Relationship): **库存明细 | Inventory Details**
+##### Tab - Supplier
+- Supplier: **供应商清单 | Supplier List (Relationship)**
 
 #### 按钮
 - None
@@ -115,6 +118,7 @@
 > 此表单在 **物料清单 | Material List** 的基础上增加了批次信息及其验收记录。
 #### 字段
 ##### Tab-Basic
+- 物料清单 | Material List (Relationship): **物料清单 | Material List**
 - Material Status (auto):
     - 可用的 | Available
     - 待归还 | Pending Return
@@ -136,9 +140,15 @@
     - Rollup **变动数量 | Number - Changed**
     - Sum
 - 领用单位 | Unit
+- 库区库位 | Storage Area: **Storage Area List**
 - 备注 | Remarks
 - 货号 | Product Number
 - 预估单价
+- 供应商 | Supplier (Relationship): **供应商清单 | Supplier List**
+
+##### Tab - Stock Change Info.
+库存变动明细 | Stock Change Record (Relationship) : **库存变动明细 | Stock Change Record**
+
 ##### Tab - FM-03I 耗品验收/服务评估记录
 - Product ( or Service) Quality | 产品(或服务) 质量
 - On-time Delivery | 物流速度
@@ -149,12 +159,6 @@
 - 技术评估 | Evaluation
 - 评价/追评 | Comments
 - File
-
-#### 关联表单
-- 物料清单 | Material List
-- 库区库位 | Storage Area
-- 供应商 | Supplier
-- 库存变动明细 | Stock Change Record
 
 #### 按钮
 - 领用
@@ -231,9 +235,7 @@
     - Filter: Status of Goods **Is one of** Received,Cancel
 - 请购项目数 (auto):
     - 所关联条目总数
-
-#### 关联表单
-- Purchase Item
+- Purchase Item (Relationship): **采购明细 | Purchase Item**
 
 #### 按钮
 - Cancel
@@ -260,6 +262,7 @@
 #### 字段
 
 ##### Tab - Basic:
+- Material (Relationship): **物料清单 | Material List**
 - Status of Goods (auto):
     - Initial: 提交后初始状态
     - Purchasing: 采购人员提交采购单 **Create PO确认购买** 后
@@ -270,9 +273,12 @@
 - Project Related:
     - RMP/PTP: 勾选后所购买项目会被标记为RMP/PTP专用，也会方便后续统计此项目花费
     - Other: 其他项目也可添加选项或使用other
+- Purchase Request (Relationship): **采购申请 | Purchase Request**
 - Requisitioner | 请购员 (auto): 当前用户
+- Purchase Order (Relationship): **采购单 | Purchase Order**
 - 购买数量 | Number
 - 采购单位 | Unit
+- 供应商 | Supplier (Relationship): **供应商清单 | Supplier List**
 - 货号 | Product Number
 - 单价 | Price
 - 总价 | Total Price (auto)
@@ -283,7 +289,9 @@
 - 纯度 | Purity
 
 ##### Tab - Stock Records:
+- 入库单 (Relationship): **入库单**
 - 入库数量: 此单下入库的数量，单位为采购单位。
+- 入库明细 (Relationship): **库存明细 | Inventory Details**
 
 ##### Tab - Receipt Info.: 
 由采购人员签收时填写
@@ -292,18 +300,6 @@
     - Broken
     - Partial Received
 - Receipt Information
-
-#### 关联表单
-
-##### Tab - Basic:
-- Material: **物料清单 | Material List**
-- Purchase Request: **采购申请 | Purchase Request**
-- Purchase Order: **采购单 | Purchase Order**
-- 供应商 | Supplier: **供应商清单 | Supplier List**
-
-##### Tab - Stock Records:
-- 入库单: **入库单**
-- 入库明细: **库存明细 | Inventory Details**
 
 #### 按钮
 Single Data Source:
@@ -348,9 +344,7 @@ Batch Data Source:
 - 汇总金额 (auto): 汇总所列项目金额，原则上应与实际总花费一致。
 - 入库明细数
 - 采购明细数
-
-#### 关联表单
-- Purchase Item
+- Purchase Item (Relationship): **采购明细 | Purchase Item**
 
 #### 按钮
 Single Data Source:
@@ -384,13 +378,12 @@ Single Data Source:
 - Operator
 - Operate Date
 - Operation
+- 库存明细 | Inventory Details (Relationship): **库存明细 | Inventory Details**
 - 变动前库存 | Number - Before
 - 变动后库存 | Number - After
 - 变动数量 | Number - Changed
 - 库存单位 | Unit
 
-#### 关联表单
-- 库存明细 | Inventory Details
 
 #### 按钮
 
@@ -407,8 +400,10 @@ Single Data Source:
 
 #### 字段
 - 入库方式 | Stocking Method
-- Operator
-- Operate Date
+- 采购明细 | Purchase Item (Relationship): **采购明细 | Purchase Item**
+- Operator (auto)
+- Operate Date (auto)
+- 物料清单 | Material List (Relationship): **物料清单 | Material List**
 - 入库数量 | Number
     - Limit numerical range: [0,Max]
     - 采购单位 | Unit
@@ -416,12 +411,8 @@ Single Data Source:
 - 有效期至 | Expired Date
 - COA
 - MSDS
-
-#### 关联表单
-- 采购明细 | Purchase Item
-- 物料清单 | Material List
-- Storage Area List
-- 库存明细 | Inventory Details
+- Storage Area List (Relationship): **Storage Area List**
+- 库存明细 | Inventory Details (Relationship): **库存明细 | Inventory Details**
 
 #### 按钮
 
@@ -458,9 +449,7 @@ Single Data Source:
 - 实际库存 | Number
     - Limit numerical range: [0,Max]
 - 领用单位 | Unit
-
-#### 关联表单
-- 库存明细 | Inventory Details
+- 库存明细 | Inventory Details (Relationship): **库存明细 | Inventory Details**
 
 #### 按钮
 
@@ -478,14 +467,12 @@ Single Data Source:
 ### 领用单（General）
 
 #### 字段
+- 库存明细 | Inventory Details (Relationship): **库存明细 | Inventory Details**
 - 领用量 | Number
     - Limit numerical range: [0,Max]
 - 领用单位 | Unit
 - 领用人 | User
 - 领用日期 | Usage Date
-
-#### 关联表单
-- 库存明细 | Inventory Details
 
 #### 按钮
 - None
@@ -513,6 +500,7 @@ Single Data Source:
 - Title (auto)
     - **库存明细 | Inventory Details**, **申请人**
 - 申请日期
+- 库存明细 | Inventory Details (Relationship): **库存明细 | Inventory Details**
 - 使用目的
 - 用前称重
 - 用后称重
@@ -522,9 +510,6 @@ Single Data Source:
 - 审批人
 - 申请人签字
 - 审批人签字
-
-#### 关联表单
-- 库存明细 | Inventory Details
 
 #### 业务规则
 
@@ -544,14 +529,12 @@ Single Data Source:
 ### 归还单
 
 #### 字段
+- 库存明细 | Inventory Details (Relationship): **库存明细 | Inventory Details**
 - 领用量 | Number
     - Limit numerical range: [0,Max]
 - 库存单位 | Unit
 - 归还员 | Returner
 - 归还日期 | Return Date
-
-#### 关联表单
-- 库存明细 | Inventory Details
 
 #### 按钮
 
@@ -571,8 +554,9 @@ Single Data Source:
 ### Self-made - PhyChem
 
 #### 字段
+- Title
+- 名称 Item
 
-#### 关联表单
 
 #### 按钮
 
@@ -602,6 +586,7 @@ Single Data Source:
 - 无菌培养:
     - 合格
     - 不合格
+- Storage Area List (Relationship): **Storage Area List**
 - HazardClass
     - General
     - Corrosive
@@ -610,11 +595,8 @@ Single Data Source:
 - Prepared by (auto): 新建时当前用户
 - Signature
 - Remark
-
-#### 关联表单
-- Storage Area List
-- Preparation - Micro
-- Equipment
+- Preparation - Micro (Relationship): **Preparation - Micro**
+- Equipment (Relationship): **Equipment**
 
 #### 按钮
 - Disable: 将状态更新为已停用，只读所有字段。
@@ -634,3 +616,14 @@ Single Data Source:
 #### 视图
 
 #### 权限设置
+
+### Preparation - Micro
+
+#### 字段
+- Title
+- Add Reagent by Using Record
+- Reagent
+- Self-Made (Micro)
+- 数量 | Amount
+- 领用单位 | Unit (auto)
+- 批号 | Batch Number (auto)
