@@ -1,8 +1,18 @@
 # Design Document
+> Document Structure:
+>- 分组
+>   - 表单
+>       - 字段
+>       - 关联表单
+>       - 按钮
+>       - 业务规则
+>       - 工作流
+>       - 视图
 
 ## Inventory
 
 ### Index
+> 此表单的作用在于规范命名，便于库存查询和统计分析。
 
 #### 字段
 - Title (auto):
@@ -21,10 +31,20 @@
 - Add Synonyms:
     - Action: 弹出窗口，可修改当前物料 **别名 | Synonyms**
 
-### 物料清单 | Material List
+#### 业务规则
+- When Material Index is **00_无需目录收录的物品 | Do not need Index** 
+    - Show **Material name**
 
+#### 工作流
+- None
+
+#### 视图
+- All
+
+### 物料清单 | Material List
+> 此表单定义了与物质本身性质相关的内容，不包括批次信息。
 #### 字段
-##### Basic
+##### Tab - Basic
 - Title (auto):
     - [规格 / 浓度 / 当量 /etc.] [Material Name], [包装 | Package] - [品牌 (生产商) | Brand]
 - Material_ID
@@ -36,13 +56,20 @@
     > 此处分类决定后续采购及领用流程。
     - 甲类危险品 | Class A
     - 管控物质 | Controlled
+        - 领用时需通过危化品领用单，双人双签。
     - 标准品 | Reference Material
+        - 常规领用单，入库后需验收。
     - Consumable - key
+        - 常规领用单，需填写领用记录。
     - Consumable - Regular
+        - 由采购人员定期盘点库存，无需领用。
+        - 当库存不足时，任何人都可以点击 **盘点** 按钮以标注实际库存，从而触发安全库存预警，方便采购人员及时补货。也可以直接点击 **再次购买** 按钮，系统将自动生成采购申请单。
     - Others
+        - 无需库存管理的物品。
 - MSDS
 - 包装 | Package
 - 规格 / 浓度 / 当量 /etc.
+> 规格是产品的具体描述，包装是产品的外部包装方式。如一包50ml离心管，其规格为“50ml”,包装为“25个/包”。如2L 37%盐酸溶液，其规格或浓度为“37%”，包装为“2L”或“2L/瓶”。同一个物品可以有不同包装，但规格不同一定是不同的物品。
 - 品牌 (生产商) | Brand (Required)
 - 货号 | Product Number
 - 预估单价
@@ -50,20 +77,34 @@
 - 领用单位 | Unit (Required)
 - 库存换算系数
 > 库存数量 = 库存换算系数 * 采购数量。如一瓶溶液包装为“500ml（/瓶）”，领用单位为“ml”，因采购单位为“瓶”，，则库存换算系数应设为“500”。此设计旨在确保领用时准确扣除库存。
-##### Inventory Info.
+##### Tab - Inventory Info.
 - 安全库存
 - 当前库存总量 (auto)
     - Rollup **当前库存总量**
     - Sum
+
 #### 关联表单
 - Material Index
 - 默认存放位置 | Storage Area
 - 库存明细 | Inventory Details
 - 供应商清单 | Supplier List
 
+#### 按钮
+- None
+
 #### 业务规则
-- When Material Index is **00_无需目录收录的物品 | Do not need Index** 
-    - Show Material name
+- None
+
+#### 工作流
+- None
+
+#### 视图
+- All
+- 库存不足
+    - Filter:
+        - **安全库存** is not empty
+        - **当前库存总量** < **安全库存**
+
 
 ### 库存明细 | Inventory Details
 
