@@ -8,6 +8,7 @@
 >       - 业务规则
 >       - 工作流
 >       - 视图
+>       - 权限设置
 
 ## Inventory
 
@@ -41,8 +42,11 @@
 #### 视图
 - All
 
+#### 权限设置
+
 ### 物料清单 | Material List
 > 此表单定义了与物质本身性质相关的内容，不包括批次信息。
+
 #### 字段
 ##### Tab - Basic
 - Title (auto):
@@ -105,9 +109,10 @@
         - **安全库存** is not empty
         - **当前库存总量** < **安全库存**
 
+#### 权限设置
 
 ### 库存明细 | Inventory Details
-
+> 此表单在 **物料清单 | Material List** 的基础上增加了批次信息及其验收记录。
 #### 字段
 ##### Tab-Basic
 - Material Status (auto):
@@ -118,11 +123,13 @@
 - 领用方式 | Use Type：默认来自上一级 **物料清单 | Material List**
 - Batch Number | 批号
 - Project Related
+    - RMP/PTP
+    - Other
 - 入库日期 | Receive Date
 - 有效期至 | Expired Date
 - 纯度等级 | Purity Grade
 - 纯度 | Purity: 
-    - range: 0-1
+    - range: [0-1]
 - COA
 - MSDS: 来自上一级 **物料清单 | Material List**
 - 当前库存数量
@@ -149,22 +156,56 @@
 - 供应商 | Supplier
 - 库存变动明细 | Stock Change Record
 
-#### 业务规则
-- When Material Status **Is one of** 已停用 | Disabled，已过期 | Expired
-    - Read-only all fields
-
-### 按钮
+#### 按钮
 - 领用
+    - Action:
+        - 弹出 **领用单 (General)**，触发 **新增领用单 (General)** 工作流，参见Change Log - 领用单 (General) - 工作流
+        - 若领用方式为 **用后归还 | Return After Use**，则更新 Status 为 **待归还 | Pending Return**
+    - Conditional:
+        - Material Status **equals** 可用的 | Available
+        - Material Type **is none of** 管控物质 | Controlled
+        - 领用方式 | Use Type **not equal to** 无需领用 | No Required
 - 盘点
+    - Action:
+        - 弹出 **盘点单**，触发 **新增盘点单** 工作流，参见Change Log - 盘点单 - 工作流
+    - Conditional:
+        - Material Status **not any of** 已停用 | Disabled
 - 危化品领用
+    - Action:
+        - 弹出 **领用单 (Controlled)**，触发 **新增危化品领用申请** 工作流，参见Change Log - 领用单 (Controlled) - 工作流
+    - Conditianal:
+        - Material Type **is any of** 管控物质 | Controlled
+        - Material Status **not any of** 已停用 | Disabled, 已过期 | Expired，已用完 | Run Out
 - 再次购买
     - Action:
         - 弹出窗口，填写采购数量，Workflow会通过正则表达式确认输出为数字型。
         - 以当前库存为模板，生成一条采购申请及其关联的采购明细。
 - 评价/验收:
-    - 弹出Tab - Rating & Evaluation，添加评价和评估信息后，Workflow将同步同一入库单下的同批号库存评价内容。
+    - Action:
+        - 弹出Tab - Rating & Evaluation，添加评价和评估信息后，Workflow将同步同一入库单下的同批号库存评价内容。
 - 停用
+    - Action:
+        - 将 Material Status 更新为 **已停用 | Disabled**
+    - Conditional:
+        - Material Status **not equal to** 已停用 | Disabled
 - 归还
+    - Action:
+        - 弹出 **归还单**
+        - 若 Material Status 为 **待归还 | Pending Return**，则更新状态为**可用的 | Available**
+        - 触发 **新增归还单** 工作流，参见 Change Log - 归还单 - 工作流
+
+#### 业务规则
+- When Material Status **Is one of** 已停用 | Disabled，已过期 | Expired
+    - Read-only all fields
+
+#### 工作流
+- None
+
+#### 视图
+- All
+- 已过期
+
+#### 权限设置
 
 ## Purchase:
 ### 采购申请 | Purchase Request
@@ -200,12 +241,14 @@
         - 将该申请单下的采购条目状态更新为 **Cancel**
     - Conditional: 已下单条目=0
 
-#### 视图
-- All
-
 #### 业务规则
 - When Status of Request **not equal to** Submitted
     - Read-only all fields
+
+#### 工作流
+
+#### 视图
+- All
 
 #### 权限设置
 - APTC Members:
@@ -281,6 +324,14 @@ Batch Data Source:
     - Action: 合并采购项目生成一条 **采购单 | Purchase Order**
     - Conditional: Status of Goods **is** Initial
 
+#### 业务规则
+
+#### 工作流
+
+#### 视图
+
+#### 权限设置
+
 ### 采购单 | Purchase Order
 
 #### 字段
@@ -319,6 +370,12 @@ Single Data Source:
 - When Status of Order **is** Cancel
     - Read-only all fields
 
+#### 工作流
+
+#### 视图
+
+#### 权限设置
+
 ## Change Log
 
 ### 库存变动明细 | Stock Change Record
@@ -334,6 +391,17 @@ Single Data Source:
 
 #### 关联表单
 - 库存明细 | Inventory Details
+
+#### 按钮
+
+#### 业务规则
+
+#### 工作流
+
+#### 视图
+
+#### 权限设置
+
 
 ### 入库单
 
@@ -355,6 +423,10 @@ Single Data Source:
 - Storage Area List
 - 库存明细 | Inventory Details
 
+#### 按钮
+
+#### 业务规则
+
 #### 工作流
 
 ##### When adding new records:
@@ -373,6 +445,11 @@ Single Data Source:
 
 - 更新 Status of Goods 为 **Stocked**
 
+#### 视图
+
+#### 权限设置
+
+
 ### 盘点单
 
 #### 字段
@@ -385,10 +462,18 @@ Single Data Source:
 #### 关联表单
 - 库存明细 | Inventory Details
 
+#### 按钮
+
+#### 业务规则
+
 #### 工作流
 
 ##### When adding new records:
 - 更新相关库存记录，call PBP - **出入库记录**
+
+#### 视图
+
+#### 权限设置
 
 ### 领用单（General）
 
@@ -402,6 +487,8 @@ Single Data Source:
 #### 关联表单
 - 库存明细 | Inventory Details
 
+#### 按钮
+- None
 #### 业务规则
 - When **领用方式 | Use Type** is **单次领用 | Single Use**
     - Show **领用量 | Number**
@@ -415,6 +502,11 @@ Single Data Source:
     - 扣减库存为领用量，标记operation为**单次领用**
 - 当领用方式为用后归还时，
     - 扣减库存为0，标记operation为**领用待归还**
+
+#### 视图
+
+#### 权限设置
+
 ### 领用单 (Controlled)
 
 #### 字段
@@ -434,6 +526,8 @@ Single Data Source:
 #### 关联表单
 - 库存明细 | Inventory Details
 
+#### 业务规则
+
 #### 工作流
 
 ##### When adding new records:
@@ -442,6 +536,10 @@ Single Data Source:
         - 通知咖啡因审批人审批，审批需签名。
     - 其他情况
         - 通知危化品审批人审批，审批需签名。
+
+#### 视图
+
+#### 权限设置
 
 ### 归还单
 
@@ -455,15 +553,36 @@ Single Data Source:
 #### 关联表单
 - 库存明细 | Inventory Details
 
+#### 按钮
+
+#### 业务规则
+
 #### 工作流
 
 ##### When adding new records:
 - 更新相关库存记录，call PBP - **出入库记录**
 
+#### 视图
+
+#### 权限设置
 
 ## Self-Made
 
 ### Self-made - PhyChem
+
+#### 字段
+
+#### 关联表单
+
+#### 按钮
+
+#### 业务规则
+
+#### 工作流
+
+#### 视图
+- All
+#### 权限设置
 
 ### Self-Made - Micro
 
@@ -510,3 +629,8 @@ Single Data Source:
 - When Status of Self-Made **Is one of** 已停用，已过期:
     - Read-only all fields
 
+#### 工作流
+
+#### 视图
+
+#### 权限设置
