@@ -26,7 +26,7 @@
 - CAS Number (Relationship): **CAS Number List**
 - Chinese Name
 - English Name
-- 别名 | Synonyms: 此处可写任意多个中文或英文名称，仅为方便查找，不会改变标准命名
+- 别名 | Synonyms: 此处可输入任意数量的中文或英文名称，仅用于方便查找，不会影响标准命名。建议用逗号分隔不同名称。
 
 ##### Tab - Material List
 - 物料清单 | Material List (Relationship): **物料清单 | Material List**
@@ -125,7 +125,7 @@
     - 已过期 | Expired
     - 已停用 | Disabled
 - 领用方式 | Use Type：默认来自上一级 **物料清单 | Material List**
-- Batch Number | 批号
+- 批号 | Batch Number
 - Project Related
     - RMP/PTP
     - Other
@@ -158,7 +158,7 @@
     - Reject
 - 技术评估 | Evaluation
 - 评价/追评 | Comments
-- File
+- Attachment
 
 #### 按钮
 - 领用
@@ -407,7 +407,7 @@ Single Data Source:
 - 入库数量 | Number
     - Limit numerical range: [0,Max]
     - 采购单位 | Unit
-- Batch Number | 批号
+- 批号 | Batch Number
 - 有效期至 | Expired Date
 - COA
 - MSDS
@@ -518,9 +518,9 @@ Single Data Source:
 ##### When adding new records:
 - Action:
     - 若Index包含 **Caffeine**
-        - 通知咖啡因审批人审批，审批需签名。
+        - 通知咖啡因审批人进行审批，审批人在审批通过时需签名确认。
     - 其他情况
-        - 通知危化品审批人审批，审批需签名。
+        - 通知危险化学品审批人进行审批，审批人在审批通过时需签名确认。
 
 #### 视图
 
@@ -555,11 +555,40 @@ Single Data Source:
 
 #### 字段
 - Title
-- 名称 Item
-
+- 名称 | Name
+- 溶剂 | Solvent
+- 批号 | Batch Number: 默认当前日期，格式为YYYYMMDD
+    > Function:CONCAT(YEAR(DATENOW()),IF(MONTH(DATENOW())<10,"0",""),MONTH(DATENOW()),IF(DAY(DATENOW())<10,"0",""),DAY(DATENOW()))
+- 包装 | Package
+- 分装个数 | Number
+- 领用单位 | Unit
+- Shelf-life (day)
+- Preparation Date (auto)
+- Expiration Date (Fx):
+    - [Expiration Date] = [Preparation Date] + [Shelf-life (day)] 
+- Calculation formula
+- 浓度 | Concentration
+- Attachment
+- HazardClass
+    - General
+    - Corrosive
+    - Flammable
+    - Toxic
+- 备注 | Remark
+- Prepared by
+- Reviewer
+- Signature (P)
+- Signature (R)
+- Preparations - PhyChem (Relationship): **Preparations - PhyChem**
+- Equipment (Relationship): **Equipment**
 
 #### 按钮
-
+- Disable: 将状态更新为已停用，只读所有字段。
+- Print
+- Reproduce:
+    - Action:
+        - 复制当前Record及其子表
+        - 清空字段:
 #### 业务规则
 
 #### 工作流
@@ -568,19 +597,61 @@ Single Data Source:
 - All
 #### 权限设置
 
+### Preparation - PhyChem
+
+#### 字段
+- Title:
+    - [Reagent] - [批号 | Batch Number]
+- Add Reagent by Using Record
+    - Filter:
+        - Operator **is** Owner (Current Record)
+        - Operate Date **equals** This Week
+- Reagent (Relationship): **库存明细 | Inventory Details**
+- Self-Made
+- 数量 | Amount
+- 单位 | Unit (auto)
+- 批号 | Batch Number (auto)
+
+#### 按钮
+- None
+
+#### 业务规则
+- When Material **is empty**:
+    - Show Self-Made
+    - Required Self-Made
+- When Self-Made **is empty**
+    - Show Add Material by Using Record, Material
+    - Required Material
+- When Material i**s not empty** or Self-Made **is not empty**
+    - Hide Or
+
+#### 工作流
+- None
+
+#### 视图
+- All
+
+#### 权限设置
+ - Hide from Bar
+
 ### Self-Made - Micro
 
 #### 字段
+- Title:
+    - [Name | 名称] - [批号 | Batch Number], [Package | 包装]
 - Status of Self-Made:
     - 可用的
     - 已过期
     - 已停用
 - Name | 名称
-- Batch Number | 批号
+- 批号 | Batch Number: 默认当前日期，格式为YYYYMMDD
+    > Function:CONCAT(YEAR(DATENOW()),IF(MONTH(DATENOW())<10,"0",""),MONTH(DATENOW()),IF(DAY(DATENOW())<10,"0",""),DAY(DATENOW()))
 - 数量 | Quantity
 - Package | 包装
+- Shelf-life (day)
 - Preparation Date
-- Expiration Date
+- Expiration Date (Fx):
+    - [Expiration Date] = [Preparation Date] + [Shelf-life (day)]
 - 灭菌后pH
 - 灭菌条件
 - 无菌培养:
@@ -603,27 +674,49 @@ Single Data Source:
 - Print
 - Reproduce:
     - Action:
-        - 复制当前Record及其子表，去除必要字段信息。
-    - Purpose:
-        - 为重复配置Self-Made提供便利。
+        - 复制当前Record及其子表
+        - 清空字段: **数量 | Quantity**，**灭菌后pH**，**Signature**，Preparations - **数量 | Amount**
 
 #### 业务规则
 - When Status of Self-Made **Is one of** 已停用，已过期:
     - Read-only all fields
 
 #### 工作流
+- None
 
 #### 视图
+- All
+- My
 
 #### 权限设置
 
 ### Preparation - Micro
 
 #### 字段
-- Title
+- Title:
+    - [Reagent] - [批号 | Batch Number]
 - Add Reagent by Using Record
-- Reagent
-- Self-Made (Micro)
+    - Filter:
+        - Operator **is** Owner (Current Record)
+        - Operate Date **equals** This Week
+- Reagent (Relationship): **库存明细 | Inventory Details**
+    - Filter: Material Status **Is one of** 可用的 | Available，待归还 | Pending Return
+- Self-Made - Micro (Relationship): **Self-Made - Micro**
 - 数量 | Amount
 - 领用单位 | Unit (auto)
 - 批号 | Batch Number (auto)
+
+#### 按钮
+- None
+
+#### 业务规则
+- None
+
+#### 工作流
+- None
+
+#### 视图
+- All
+
+#### 权限设置
+ - Hide from Bar
